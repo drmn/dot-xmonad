@@ -1,6 +1,9 @@
--- xmonad-0.13
+-- xmonad-0.15
 
 import           XMonad                       hiding (Tall)
+import           XMonad.Actions.Minimize      (maximizeWindowAndFocus,
+                                               minimizeWindow,
+                                               withLastMinimized)
 import           XMonad.Hooks.DynamicLog      (dynamicLogWithPP, ppOutput,
                                                ppSep, ppSort, ppTitle,
                                                xmobarColor, xmobarPP)
@@ -16,8 +19,7 @@ import           XMonad.Layout.BoringWindows  (boringWindows, focusDown,
 import           XMonad.Layout.HintedTile     (Alignment (..), HintedTile (..),
                                                Orientation (..))
 import           XMonad.Layout.Maximize       (maximize, maximizeRestore)
-import           XMonad.Layout.Minimize       (MinimizeMsg (..), minimize,
-                                               minimizeWindow)
+import           XMonad.Layout.Minimize       (minimize)
 import           XMonad.Layout.NoBorders      (noBorders, smartBorders)
 import           XMonad.Layout.Renamed        (Rename (..), renamed)
 import           XMonad.Prompt                (XPConfig (..), XPPosition (..))
@@ -81,7 +83,7 @@ myAdditionalKeysP = [
     , ("M-k",   focusUp)
     , ("M-m",   withFocused (sendMessage . maximizeRestore))
     , ("M-n",   withFocused minimizeWindow)
-    , ("M-S-n", sendMessage RestoreNextMinimizedWin)
+    , ("M-S-n", withLastMinimized maximizeWindowAndFocus)
 
     -- Toggle dock visibility
     , ("M-b",   sendMessage ToggleStruts)
@@ -98,4 +100,3 @@ myXPConfig = def { font              = "xft:sans-serif:size=6"
                  , alwaysHighlight   = True
                  , height            = 40
                  }
-
