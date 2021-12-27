@@ -1,17 +1,14 @@
--- xmonad-0.15
-
 import           XMonad                       hiding (Tall)
 import           XMonad.Actions.Minimize      (maximizeWindowAndFocus,
                                                minimizeWindow,
                                                withLastMinimized)
-import           XMonad.Hooks.DynamicLog      (dynamicLogWithPP, ppOutput,
-                                               ppSep, ppSort, ppTitle,
-                                               xmobarColor, xmobarPP)
-import           XMonad.Hooks.EwmhDesktops    (ewmh, fullscreenEventHook)
+import           XMonad.Hooks.EwmhDesktops    (ewmh, ewmhFullscreen)
 import           XMonad.Hooks.ManageDocks     (ToggleStruts (..), avoidStruts,
                                                docks)
 import           XMonad.Hooks.ManageHelpers   (doFullFloat, isDialog,
                                                isFullscreen)
+import           XMonad.Hooks.StatusBar       (statusBarProp, withSB)
+import           XMonad.Hooks.StatusBar.PP    (PP (..), xmobarColor, xmobarPP)
 import           XMonad.Hooks.UrgencyHook     (NoUrgencyHook (..),
                                                withUrgencyHook)
 import           XMonad.Layout.BoringWindows  (boringWindows, focusDown,
@@ -26,51 +23,45 @@ import           XMonad.Prompt                (XPConfig (..), XPPosition (..))
 import           XMonad.Prompt.Shell          (shellPrompt)
 import           XMonad.Util.Cursor           (setDefaultCursor)
 import           XMonad.Util.EZConfig         (additionalKeysP)
-import           XMonad.Util.Run              (hPutStrLn, spawnPipe,
-                                               unsafeSpawn)
+import           XMonad.Util.Run              (safeSpawn)
 import           XMonad.Util.WorkspaceCompare (getSortByXineramaRule)
 
 main = do
-    myStatusBar <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
-    xmonad $ docks
-           $ ewmh
-           $ withUrgencyHook NoUrgencyHook
-           $ def { layoutHook      = myLayoutHook
-                 , manageHook      = myManageHook
-                 , handleEventHook = myHandleEventHook
-                 , modMask         = mod4Mask
-                 , logHook         = myLogHook myStatusBar
-                 , startupHook     = myStartupHook
+    xmonad . ewmhFullscreen . ewmh
+           . withUrgencyHook NoUrgencyHook
+           . withSB myStatusBar
+           . docks
+           $ def { layoutHook  = myLayoutHook
+                 , manageHook  = myManageHook
+                 , modMask     = mod4Mask
+                 , startupHook = myStartupHook
                  }
                  `additionalKeysP` myAdditionalKeysP
 
-myLayoutHook =   (renamed [CutWordsLeft 2])
-               $ smartBorders $ avoidStruts $ boringWindows $ maximize $ minimize
-               $ (hintedTile Tall ||| hintedTile Wide)
-             ||| (avoidStruts $ noBorders Full)
-    where
-        hintedTile = HintedTile nmaster delta ratio TopLeft
-        nmaster    = 1
-        ratio      = 1/2
-        delta      = 3/100
+myStatusBar = statusBarProp "xmobar $HOME/.config/xmonad/xmobarrc" (pure myXmobarPP)
+
+myXmobarPP = xmobarPP {
+      ppSep    = " | "
+    , ppTitle  = xmobarColor "green" ""
+    , ppSort   = getSortByXineramaRule
+    }
+
+myLayoutHook =
+    (renamed [CutWordsLeft 2])
+    . smartBorders . avoidStruts . boringWindows . maximize . minimize
+    $ (hintedTile Tall ||| hintedTile Wide ||| Full)
+  where
+    hintedTile = HintedTile nmaster delta ratio TopLeft
+    nmaster    = 1
+    ratio      = 1/2
+    delta      = 3/100
 
 myManageHook = composeAll [
-                     isFullscreen                      --> doFullFloat
-                   , isDialog                          --> doFloat
-                   , className =? "mpv"                --> doFloat
-                   , className =? "Gimp"               --> doFloat
-                   , className =? "Thunderbird"        --> doShift "9"
-                   , className =? "Slack"              --> doShift "9"
-                   ]
-
-myHandleEventHook = fullscreenEventHook
-
-myLogHook h = dynamicLogWithPP $ xmobarPP {
-                    ppSep    = " | "
-                  , ppTitle  = xmobarColor "green" ""
-                  , ppOutput = hPutStrLn h
-                  , ppSort   = getSortByXineramaRule
-                  }
+      isFullscreen        --> doFullFloat
+    , isDialog            --> doFloat
+    , className =? "mpv"  --> doFloat
+    , className =? "Gimp" --> doFloat
+    ]
 
 myStartupHook = do
     setDefaultCursor xC_left_ptr
@@ -88,15 +79,15 @@ myAdditionalKeysP = [
     -- Toggle dock visibility
     , ("M-b",   sendMessage ToggleStruts)
 
-    , ("M-S-l", unsafeSpawn "alock -auth pam -bg blank")
-    , ("M-c",   unsafeSpawn "chromium --incognito")
+    , ("M-c",   safeSpawn "chromium" ["--incognito", "--force-device-scale-factor=1.8"])
     ]
 
-myXPConfig = def { font              = "xft:sans-serif:size=6"
-                 , bgColor           = "black"
-                 , fgColor           = "grey"
-                 , promptBorderWidth = 0
-                 , position          = Top
-                 , alwaysHighlight   = True
-                 , height            = 40
-                 }
+myXPConfig = def {
+      font              = "xft:Noto Sans Mono:size=6"
+    , bgColor           = "black"
+    , fgColor           = "grey"
+    , promptBorderWidth = 0
+    , position          = Top
+    , alwaysHighlight   = True
+    , height            = 34
+    }

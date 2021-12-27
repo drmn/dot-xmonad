@@ -1,9 +1,9 @@
-Config { font = "xft:Open Sans:size=6, Noto Sans CJK JP:size=6"
+Config { font = "xft:Noto Sans CJK JP:size=6"
        , bgColor = "black"
        , fgColor = "grey"
        , position = Top
        , lowerOnStart = True
-       , commands = [ Run StdinReader
+       , commands = [ Run XMonadLog
                     , Run Com "/bin/bash" ["-c", "cut -d ' ' -f -3 /proc/loadavg"] "loadavg" 10
                     , Run Memory [] 10
                     , Run DynNetwork [] 10
@@ -12,5 +12,5 @@ Config { font = "xft:Open Sans:size=6, Noto Sans CJK JP:size=6"
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ Load: %loadavg% | %memory% | %dynnetwork% | %battery% | <fc=#ee9a00>%date%</fc>"
+       , template = "%XMonadLog% }{ Load: %loadavg% | %memory% | %dynnetwork% | %battery% | <fc=#ee9a00>%date%</fc>"
        }
