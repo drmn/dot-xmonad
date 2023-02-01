@@ -6,4 +6,4 @@
 	url = https://github.com/xmonad/xmonad-contrib.git
 [submodule "xmobar"]
 	path = xmobar
-	url = https://github.com/jaor/xmobar.git
+	url = https://codeberg.org/xmobar/xmobar.git

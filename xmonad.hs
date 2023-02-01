@@ -8,7 +8,8 @@ import           XMonad.Hooks.ManageDocks     (ToggleStruts (..), avoidStruts,
 import           XMonad.Hooks.ManageHelpers   (doFullFloat, isDialog,
                                                isFullscreen)
 import           XMonad.Hooks.StatusBar       (statusBarProp, withSB)
-import           XMonad.Hooks.StatusBar.PP    (PP (..), xmobarColor, xmobarPP)
+import           XMonad.Hooks.StatusBar.PP    (PP (..), wrap, xmobarColor,
+                                               xmobarPP)
 import           XMonad.Hooks.UrgencyHook     (NoUrgencyHook (..),
                                                withUrgencyHook)
 import           XMonad.Layout.BoringWindows  (boringWindows, focusDown,
@@ -38,13 +39,18 @@ main = do
                  }
                  `additionalKeysP` myAdditionalKeysP
 
-myStatusBar = statusBarProp "xmobar $HOME/.config/xmonad/xmobarrc" (pure myXmobarPP)
+myStatusBar = statusBarProp "xmobar --dpi 254 $HOME/.config/xmonad/xmobarrc" (pure myXmobarPP)
 
 myXmobarPP = xmobarPP {
-      ppSep    = " | "
-    , ppTitle  = xmobarColor "green" ""
-    , ppSort   = getSortByXineramaRule
+      ppVisible = grey . wrap "(" ")"
+    , ppHidden  = grey
+    , ppSep     = " | "
+    , ppTitle   = xmobarColor "#00cc00" ""
+    , ppLayout  = grey
+    , ppSort    = getSortByXineramaRule
     }
+  where
+    grey = xmobarColor "#999999" ""
 
 myLayoutHook =
     (renamed [CutWordsLeft 2])

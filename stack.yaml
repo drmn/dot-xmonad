@@ -45,10 +45,6 @@ packages:
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
-flags:
-  xmobar:
-    with_utf8: true
-    with_xft: true
 
 # Extra package databases containing global packages
 # extra-package-dbs: []
