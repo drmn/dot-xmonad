@@ -4,7 +4,7 @@ Config { font = "Noto Sans CJK JP 6"
        , position = TopH 30
        , lowerOnStart = True
        , commands = [ Run XMonadLog
-                    , Run Com "/bin/bash" ["-c", "cut -d ' ' -f -3 /proc/loadavg"] "loadavg" 10
+		    , Run Load ["-t" , "Load: <load1> <load5> <load15>", "-d", "2"] 10
                     , Run Memory [] 10
                     , Run DynNetwork [] 10
                     , Run Battery [] 300
@@ -12,5 +12,5 @@ Config { font = "Noto Sans CJK JP 6"
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%XMonadLog% }{ Load: %loadavg% | %memory% | %dynnetwork% | %battery% | <fc=#ee9a00>%date%</fc>"
+       , template = "%XMonadLog% }{ %load% | %memory% | %dynnetwork% | %battery% | <fc=#ee9a00>%date%</fc>"
        }

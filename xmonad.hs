@@ -8,8 +8,8 @@ import           XMonad.Hooks.ManageDocks     (ToggleStruts (..), avoidStruts,
 import           XMonad.Hooks.ManageHelpers   (doFullFloat, isDialog,
                                                isFullscreen)
 import           XMonad.Hooks.StatusBar       (statusBarProp, withSB)
-import           XMonad.Hooks.StatusBar.PP    (PP (..), wrap, xmobarColor,
-                                               xmobarPP)
+import           XMonad.Hooks.StatusBar.PP    (PP (..), shorten, wrap,
+                                               xmobarColor, xmobarPP)
 import           XMonad.Hooks.UrgencyHook     (NoUrgencyHook (..),
                                                withUrgencyHook)
 import           XMonad.Layout.BoringWindows  (boringWindows, focusDown,
@@ -45,7 +45,7 @@ myXmobarPP = xmobarPP {
       ppVisible = grey . wrap "(" ")"
     , ppHidden  = grey
     , ppSep     = " | "
-    , ppTitle   = xmobarColor "#00cc00" ""
+    , ppTitle   = xmobarColor "#00cc00" "" . shorten 80
     , ppLayout  = grey
     , ppSort    = getSortByXineramaRule
     }
